@@ -1,0 +1,58 @@
+#! /usr/bin/env ruby
+
+VERSION = "1.0.0"
+
+require './lib/network_monitor'
+require './lib/dns_check'
+require 'slop'
+
+def gateway
+  case Gem::Platform.local.os
+  when "darwin" then `netstat -rn -f inet | grep 'default' | awk '{print $2}'`
+  else `ip route | awk '/default/{print $3}'`
+  end.chomp.split.first
+end
+
+@gateway = gateway
+
+opts = Slop.parse do |o|
+  o.separator ''
+  o.separator 'Required:'
+
+  o.string  '-m', '--modem-plug-ip', "IP address for the modem's smart plug",   required: true
+  o.string  '-r', '--router-plug-ip', "IP address for the router's smart plug", required: true
+
+  o.separator ''
+  o.separator 'Optional:'
+  o.integer '-d', '--retry-delay', "Delay before retrying to reset the network stack (in minutes). Default: 5",  required: false, default: 5
+  o.integer '-i', '--check-interval', "Check for Internet connectivity every x minutes. Default: 1",  required: false, default: 1
+  o.integer '-o', '--router-ip', "IP address of the LAN's router. Default: #{@gateway}", required: false, default: @gateway
+  o.integer '-p', '--post-reboot-delay', "Wait x minutes after rebooting router or modem. Default: 3",  required: false, default: 3
+  o.boolean '-z', '--produce-random-failures', "Randomly fail checks. Use this to TEST your configuration ONLY.", default: false
+  o.separator ''
+  o.separator 'Other:'
+
+  o.on '-v', '--version' do
+    puts VERSION ; exit
+  end
+
+  o.on '--help' do
+    puts o ; exit
+  end
+end
+
+nm = NetworkMonitor.new router_ip: opts[:router_ip],
+                        router_plug_ip: opts[:router_plug_ip],
+                        modem_plug_ip: opts[:modem_plug_ip],
+                        post_reboot_delay: opts[:post_reboot_delay] * 60,
+                        produce_random_failures: opts[:produce_random_failures]
+
+loop do
+  if nm.internet_up?
+    puts "[#{Time.now}] Internet is up."
+    sleep opts[:check_interval] * 60
+  else
+    puts "[#{Time.now}] Internet is DOWN! Waiting #{opts[:retry_delay]} before trying again."
+    sleep opts[:retry_delay] * 60
+  end
+end

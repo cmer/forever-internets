@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    net-ping (2.0.4)
+    slop (4.6.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  net-ping
+  slop
+
+BUNDLED WITH
+   1.16.2
