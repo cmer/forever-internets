@@ -14,6 +14,8 @@ It is intended to be a self-hosted alternative to [ResetPlug](http://resetplug.c
 ## Software Requirements
 
 - Ruby 2.5+
+- Node.js
+- tplink-smarthome-api (install with `npm install -g tplink-smarthome-api`)
 
 ## Usage
 
