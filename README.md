@@ -30,4 +30,4 @@ bundle install
 
 ## Docker
 
-It is recommended to run this in a [Docker container](https://hub.docker.com/r/cmer/forever-internet/).
+It is recommended to run this in a [Docker container](https://cloud.docker.com/u/cmer/repository/docker/cmer/forever-internets).
