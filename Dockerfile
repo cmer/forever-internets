@@ -8,12 +8,12 @@ WORKDIR /app
 
 COPY ["docker-files/run.sh", "/usr/local/bin/"]
 
-RUN gem install bundler && \
-    bundle config --global frozen 1 && \
-    apk update && \
-    apk add --update git nodejs nodejs-npm dumb-init && \
-    npm install -g tplink-smarthome-api && \
+RUN apk update && \
+    apk add --update build-base libffi-dev git nodejs nodejs-npm dumb-init && \
     rm -rf /var/cache/apk/* && \
+    gem install bundler && \
+    bundle config --global frozen 1 && \
+    npm install -g tplink-smarthome-api && \
     git clone https://github.com/cmer/forever-internets.git /app && \
     cd /app && bundle
 
