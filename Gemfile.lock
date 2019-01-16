@@ -1,15 +1,27 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    net-ping (2.0.4)
+    date (2.0.0)
+    ipaddr (1.2.2)
+    irb (1.0.0)
+    json (2.1.0)
+    net-ping (2.0.5)
+    openssl (2.1.2)
+      ipaddr
+    ostruct (0.1.0)
     slop (4.6.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  date
+  irb
+  json
   net-ping
+  openssl
+  ostruct
   slop
 
 BUNDLED WITH
-   1.16.2
+   2.0.1

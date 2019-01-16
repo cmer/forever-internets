@@ -71,12 +71,22 @@ class NetworkMonitor
     true
   end
 
-  def internet_ip_pingable?
+  def internet_ip_pingable?(retry_delay: 10, retries: 3)
     return false if produce_random_failures? && out_of_luck?
+    retries     ||= 0
+    retry_delay ||= 10
+    attempts      = 0
 
-    INTERNET_HOSTS.each do |host|
-      return true if host_up?(host)
+    while attempts <= retries
+      sleep(retry_delay) if attempts > 0
+
+      INTERNET_HOSTS.each do |host|
+        return true if host_up?(host)
+      end
+
+      attempts += 1
     end
+
     false
   end
 
@@ -86,12 +96,23 @@ class NetworkMonitor
     host_up?(@router_ip)
   end
 
-  def dns_resolves?
+  def dns_resolves?(retry_delay: 10, retries: 3)
     return false if produce_random_failures? && out_of_luck?
 
-    HOSTS_TO_RESOLVE.each do |host|
-      return true if DnsCheck.new(host).a?
+    retries     ||= 0
+    retry_delay ||= 10
+    attempts      = 0
+
+    while attempts <= retries
+      sleep(retry_delay) if attempts > 0
+
+      HOSTS_TO_RESOLVE.each do |host|
+        return true if DnsCheck.new(host).a?
+      end
+
+      attempts += 1
     end
+
     false
   end
 
