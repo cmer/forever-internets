@@ -8,7 +8,8 @@ WORKDIR /app
 
 COPY ["docker-files/run.sh", "/usr/local/bin/"]
 
-RUN bundle config --global frozen 1 && \
+RUN gem install bundler && \
+    bundle config --global frozen 1 && \
     apk update && \
     apk add --update git nodejs nodejs-npm dumb-init && \
     npm install -g tplink-smarthome-api && \
