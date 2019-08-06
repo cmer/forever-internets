@@ -50,9 +50,11 @@ nm = NetworkMonitor.new router_ip: opts[:router_ip],
 loop do
   if nm.internet_up?
     puts "[#{Time.now}] Internet is up."
+    $stdout.flush
     sleep opts[:check_interval] * 60
   else
     puts "[#{Time.now}] Internet is DOWN! Waiting #{opts[:retry_delay]} before trying again."
+    $stdout.flush
     sleep opts[:retry_delay] * 60
   end
 end

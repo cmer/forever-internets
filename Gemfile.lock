@@ -10,6 +10,8 @@ GEM
       ipaddr
     ostruct (0.1.0)
     slop (4.6.2)
+    tplink_smarthome_api (0.3.1)
+      json
 
 PLATFORMS
   ruby
@@ -22,6 +24,7 @@ DEPENDENCIES
   openssl
   ostruct
   slop
+  tplink_smarthome_api (~> 0.3.1)
 
 BUNDLED WITH
    2.0.1
