@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  forever-internets:
+    image: cmer/forever-internets
+    restart: always
+    network_mode: host
+    environment:
+      - ROUTER_PLUG_IP=10.0.0.241
+      - MODEM_PLUG_IP=10.0.0.242
