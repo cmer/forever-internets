@@ -27,6 +27,7 @@ class NetworkMonitor
     # Is the router even reacheable?
     if !router_ip_pingable?
       puts "[#{Time.now}] Router #{@router_ip} is not reacheable. Rebooting..."
+      $stdout.flush
       reboot_router
       post_reboot_sleep(:router)
     end
@@ -36,6 +37,7 @@ class NetworkMonitor
     # Internet is still down after checking connectivity to router
     # and perhaps even rebooting it. Let's try restarting the modem.
     puts "[#{Time.now}] Internet is not reacheable. Rebooting modem..."
+    $stdout.flush
     reboot_modem
     post_reboot_sleep(:modem)
     return true if internet_ip_pingable? && dns_resolves?
@@ -43,6 +45,7 @@ class NetworkMonitor
     # Internet is still not available after rebooting modem. Force
     # a router reboot one last time.
     puts "[#{Time.now}] Internet is not reacheable. Rebooting router..."
+    $stdout.flush
     reboot_router
     post_reboot_sleep(:router)
 
@@ -54,6 +57,7 @@ class NetworkMonitor
 
   def post_reboot_sleep(item)
     puts "[#{Time.now}] Rebooted #{item}. Waiting for #{@post_reboot_delay} seconds..."
+    $stdout.flush
     sleep(@post_reboot_delay)
   end
 
