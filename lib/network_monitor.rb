@@ -1,6 +1,7 @@
 require 'json'
 require 'net/ping'
 require 'resolv'
+require 'tplink_smarthome_api'
 
 class NetworkMonitor
   INTERNET_HOSTS     = %w(8.8.8.8 1.1.1.1 9.9.9.9)
@@ -15,7 +16,7 @@ class NetworkMonitor
     @modem_plug_ip           = modem_plug_ip
     @produce_random_failures = produce_random_failures
     @post_reboot_delay       = post_reboot_delay
-    raise unless smarthome_cli_available?
+    raise unless TplinkSmarthomeApi.dependencies_met?
   end
 
   def internet_up?
@@ -26,8 +27,9 @@ class NetworkMonitor
     # Is the router even reacheable?
     if !router_ip_pingable?
       puts "[#{Time.now}] Router #{@router_ip} is not reacheable. Rebooting..."
-      reboot_router(:router)
-      post_reboot_sleep
+      $stdout.flush
+      reboot_router
+      post_reboot_sleep(:router)
     end
 
     return true if internet_ip_pingable? && dns_resolves?
@@ -35,6 +37,7 @@ class NetworkMonitor
     # Internet is still down after checking connectivity to router
     # and perhaps even rebooting it. Let's try restarting the modem.
     puts "[#{Time.now}] Internet is not reacheable. Rebooting modem..."
+    $stdout.flush
     reboot_modem
     post_reboot_sleep(:modem)
     return true if internet_ip_pingable? && dns_resolves?
@@ -42,6 +45,7 @@ class NetworkMonitor
     # Internet is still not available after rebooting modem. Force
     # a router reboot one last time.
     puts "[#{Time.now}] Internet is not reacheable. Rebooting router..."
+    $stdout.flush
     reboot_router
     post_reboot_sleep(:router)
 
@@ -53,6 +57,7 @@ class NetworkMonitor
 
   def post_reboot_sleep(item)
     puts "[#{Time.now}] Rebooted #{item}. Waiting for #{@post_reboot_delay} seconds..."
+    $stdout.flush
     sleep(@post_reboot_delay)
   end
 
@@ -64,10 +69,10 @@ class NetworkMonitor
     reboot_device(@modem_plug_ip)
   end
 
-  def reboot_device(device_ip)
-    power_off(device_ip)
+  def reboot_device(ip)
+    smart_plug(ip).power_off
     sleep(POWER_ON_OFF_DELAY)
-    power_on(device_ip)
+    smart_plug(ip).power_on
     true
   end
 
@@ -117,37 +122,16 @@ class NetworkMonitor
   end
 
   def power_on(ip)
-    switch_power true, ip
+    smart_plug(ip).power_on
   end
 
   def power_off(ip)
-    switch_power false, ip
-  end
-
-  def switch_power(value, ip)
-    puts "[#{Time.now}] Switching power #{value ? 'on' : 'off'} for #{ip}..."
-    payload = { system: {
-                set_relay_state: { state: value ? 1 : 0 }
-              } }.to_json
-    send_command payload, ip
-  end
-
-  def send_command(payload, ip)
-    `tplink-smarthome-api sendCommand #{ip} '#{payload}'`
+    smart_plug(ip).power_off
   end
 
   def host_up?(host)
     check = Net::Ping::External.new(host)
     check.ping?
-  end
-
-  def smarthome_cli_available?
-    `which tplink-smarthome-api`
-    return true if $? == 0
-
-    puts "[#{Time.now}] tplink-smarthome-api could not be found."
-    puts "[#{Time.now}] To install it, run: `npm install -g tplink-smarthome-api`"
-    false
   end
 
   def produce_random_failures?
@@ -156,5 +140,10 @@ class NetworkMonitor
 
   def out_of_luck?
     Random.rand(OOL_ODDS + 1) == 0
+  end
+
+  def smart_plug(ip)
+    @smart_plug ||= {}
+    @smart_plug[ip] ||= TplinkSmarthomeApi.new(ip)
   end
 end
