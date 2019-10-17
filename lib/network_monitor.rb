@@ -133,8 +133,7 @@ class NetworkMonitor
   end
 
   def host_up?(host)
-    check = Net::Ping::External.new(host)
-    check.ping?
+    Net::Ping::External.new(host, 7, 1).ping?
   end
 
   def produce_random_failures?
