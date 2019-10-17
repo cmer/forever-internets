@@ -4,7 +4,7 @@ require 'resolv'
 require 'tplink_smarthome_api'
 
 class NetworkMonitor
-  INTERNET_HOSTS     = %w(8.8.8.8 1.1.1.1 9.9.9.9)
+  INTERNET_HOSTS     = %w(8.8.8.8 9.9.9.9 208.67.222.222)
   HOSTS_TO_RESOLVE   = %w(google.com amazon.com facebook.com)
   POWER_ON_OFF_DELAY = 5
   POST_REBOOT_DELAY  = 60 * 3
