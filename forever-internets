@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 require './lib/network_monitor'
 require './lib/dns_check'

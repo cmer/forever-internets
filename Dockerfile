@@ -9,11 +9,10 @@ WORKDIR /app
 COPY ["docker-files/run.sh", "/usr/local/bin/"]
 
 RUN apk update && \
-    apk add --update build-base libffi-dev git nodejs nodejs-npm dumb-init && \
+    apk add --update build-base libffi-dev git python2.7 dumb-init && \
     rm -rf /var/cache/apk/* && \
     gem install bundler && \
     bundle config --global frozen 1 && \
-    npm install -g tplink-smarthome-api && \
     git clone https://github.com/cmer/forever-internets.git /app && \
     cd /app && bundle
 

@@ -1,7 +1,6 @@
 require 'json'
 require 'net/ping'
 require 'resolv'
-require 'tplink_smarthome_api'
 
 class NetworkMonitor
   INTERNET_HOSTS     = %w(8.8.8.8 9.9.9.9 208.67.222.222)
@@ -16,7 +15,11 @@ class NetworkMonitor
     @modem_plug_ip           = modem_plug_ip
     @produce_random_failures = produce_random_failures
     @post_reboot_delay       = post_reboot_delay
-    raise unless TplinkSmarthomeApi.dependencies_met?
+
+    unless python_dependency_met?
+      puts "Python 2.7.x is required. Not found in PATH."
+      exit 1
+    end
   end
 
   def internet_up?
@@ -70,9 +73,9 @@ class NetworkMonitor
   end
 
   def reboot_device(ip)
-    smart_plug(ip).power_off
+    smart_plug_cmd(ip, 'off')
     sleep(POWER_ON_OFF_DELAY)
-    smart_plug(ip).power_on
+    smart_plug_cmd(ip, 'on')
     true
   end
 
@@ -122,11 +125,11 @@ class NetworkMonitor
   end
 
   def power_on(ip)
-    smart_plug(ip).power_on
+    smart_plug_cmd(ip, 'on')
   end
 
   def power_off(ip)
-    smart_plug(ip).power_off
+    smart_plug_cmd(ip, 'off')
   end
 
   def host_up?(host)
@@ -142,8 +145,19 @@ class NetworkMonitor
     Random.rand(OOL_ODDS + 1) == 0
   end
 
-  def smart_plug(ip)
-    @smart_plug ||= {}
-    @smart_plug[ip] ||= TplinkSmarthomeApi.new(ip)
+  def smart_plug_cmd(ip, command)
+    `#{python_path} #{smartplug_script_path} -t #{ip} -c #{command}`
+  end
+
+  def smartplug_script_path
+    File.join(File.expand_path(File.dirname(__FILE__)), '..', 'bin', 'tplink_smartplug.py')
+  end
+
+  def python_path
+    @python_path ||= `which python`.to_s.strip
+  end
+
+  def python_dependency_met?
+    `#{python_path} --version 2>&1`.match?(/2\.7/)
   end
 end

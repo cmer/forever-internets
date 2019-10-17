@@ -1,4 +1,4 @@
-# Forever Internets 
+# Forever Internets
 
 **Automatically reboot your modem and router when your Internet crashes.**
 
@@ -14,8 +14,7 @@ It is intended to be a self-hosted alternative to [ResetPlug](http://resetplug.c
 ## Software Requirements
 
 - Ruby 2.5+
-- Node.js
-- tplink-smarthome-api (install with `npm install -g tplink-smarthome-api`)
+- Python 2.7
 
 ## Usage
 
@@ -24,10 +23,15 @@ It is intended to be a self-hosted alternative to [ResetPlug](http://resetplug.c
 bundle install
 
 # Run
-./forever-internets --help 
+./forever-internets --help
 ./forever-internets --modem-plug-ip 10.0.0.11 --router-plug-ip 10.0.0.12
 ```
 
 ## Docker
 
 It is recommended to run this in a [Docker container](https://cloud.docker.com/u/cmer/repository/docker/cmer/forever-internets).
+
+
+## Credit
+
+This uses the excellent TP-Link Python script by Lubomir Stroetmann.
