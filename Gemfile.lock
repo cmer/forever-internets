@@ -4,7 +4,7 @@ GEM
     date (2.0.0)
     ipaddr (1.2.2)
     irb (1.0.0)
-    json (2.1.0)
+    json (2.5.1)
     net-ping (2.0.5)
     openssl (2.1.2)
       ipaddr
@@ -13,15 +13,16 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-darwin-20
 
 DEPENDENCIES
   date
   irb
-  json
+  json (> 2.3.0)
   net-ping
   openssl
   ostruct
   slop
 
 BUNDLED WITH
-   2.0.2
+   2.2.0
