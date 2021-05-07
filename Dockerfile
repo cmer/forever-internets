@@ -1,4 +1,4 @@
-FROM ruby:2.6-alpine3.8
+FROM ruby:2.7.3-alpine3.13
 LABEL maintainer="Carl Mercier <foss@carlmercier.com>"
 
 ENV ROUTER_PLUG_IP="10.0.0.241" \
