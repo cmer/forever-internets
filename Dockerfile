@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ["docker-files/run.sh", "/usr/local/bin/"]
 
 RUN apk update && \
-    apk add --update build-base libffi-dev git python2 dumb-init && \
+    apk add --update build-base libffi-dev git python2 dumb-init openssl-dev && \
     rm -rf /var/cache/apk/* && \
     gem install bundler && \
     bundle config --global frozen 1 && \
